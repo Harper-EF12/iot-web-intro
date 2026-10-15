@@ -14,6 +14,6 @@ define('DB_NAME', 'your_database_name');
 define('DB_USER', 'your_database_user');
 define('DB_PASS', 'your_database_password');
 
-// --- API key (from your credentials slip) ---
+// --- API key (make your own with:  openssl rand -hex 16) ---
 // Shared secret your Pi sends with every upload so the server knows it's you.
 define('API_KEY', 'your-api-key');

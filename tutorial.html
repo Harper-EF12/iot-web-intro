@@ -143,7 +143,7 @@
 <div class="box note">
   <strong class="tag">You will need</strong>
   <p>Your Pi with the BME280 connected, and your <strong>credentials slip</strong>. The slip has your website address,
-  FTP login, database details and API key. Keep it to yourself.</p>
+  FTP login and database details. Keep it to yourself.</p>
 </div>
 
 <div class="box note">
@@ -263,12 +263,22 @@ Refresh it, and the time changes, because the server builds the page fresh for e
 <!-- ================================================================== -->
 <h2><span class="num">3</span> Connect PHP to your database</h2>
 
-<p>PHP needs your database login. Real passwords never go in the shared files, so make your own copy of the template and fill it in:</p>
+<p>PHP needs your database login, and your API needs a key. Real secrets never go in the shared files, so you'll make your own copy of the template and fill it in.</p>
+
+<h3>3a. Make your API key</h3>
+<p>An <strong>API key</strong> is a shared secret: a long random string that only your Pi and your server know.
+Later, your Pi sends it with every reading, and the server rejects anything without it. Nobody issues it to you. You make it up,
+and a computer is better at making up random strings than a person is:</p>
+<div class="codeblock"><pre>openssl rand -hex 16</pre></div>
+<p>This prints one line of 32 characters, something like <code>9f3c1a7e5b2d48c0a6e1f7d93b4c2e85</code>. Yours will be different.
+Leave the terminal open: you'll copy it into <code>config.php</code> in a moment, and into the Pi's <code>config.py</code> in Step 7.</p>
+
+<h3>3b. Fill in config.php</h3>
 <div class="codeblock"><pre>cd ~/iot-web-intro/server
 cp config.example.php config.php
 nano config.php</pre></div>
 
-<p>Replace each placeholder with the value from your slip. Keep the quote marks:</p>
+<p>Replace the database placeholders with the values from your slip, and <code>your-api-key</code> with the key you just made. Keep the quote marks:</p>
 <div class="codeblock"><div class="label">config.php</div><pre>define('DB_HOST', 'your-database-host.example.net');  // host name only, no :3306 on the end
 define('DB_NAME', 'your_database_name');
 define('DB_USER', 'your_database_user');
@@ -396,7 +406,7 @@ that almost every language can read.</p>
 <div class="codeblock"><pre>curl -s "http://piN.mechatron.co.uk/api.php?limit=5" | python3 -m json.tool</pre></div>
 
 <h3>5b. Write with curl</h3>
-<p>Replace <code>YOUR_API_KEY</code> with the key from your slip:</p>
+<p>Replace <code>YOUR_API_KEY</code> with the key you made in Step 3a (it's in <code>config.php</code> if you've lost it):</p>
 <div class="codeblock"><pre>curl -i -X POST "http://piN.mechatron.co.uk/api.php" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \

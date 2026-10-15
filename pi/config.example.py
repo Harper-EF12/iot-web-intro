@@ -8,7 +8,7 @@
 # Your website address. Replace N with your number. No slash on the end.
 SERVER_URL = "http://piN.mechatron.co.uk"
 
-# Must match API_KEY in your server's config.php (it's on your credentials slip).
+# Must be exactly the same as API_KEY in your server's config.php.
 API_KEY = "your-api-key"
 
 # Seconds between readings.
