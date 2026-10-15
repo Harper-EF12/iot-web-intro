@@ -1,0 +1,12 @@
+# Real credentials — never commit these
+server/config.php
+pi/config.py
+
+# Python
+pi/.venv/
+__pycache__/
+
+# Editor leftovers (nano writes *.save if it is interrupted)
+*.save
+*.swp
+*~

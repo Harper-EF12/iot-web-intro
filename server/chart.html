@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sensor dashboard</title>
+
+  <!-- Chart.js is loaded from a CDN by the BROWSER. Nothing is installed on the server. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin: 1rem 0 2rem; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; }
+    .card .label { color: #666; font-size: 0.9rem; }
+    .card .value { font-size: 2rem; font-weight: 600; }
+    .chart-box { position: relative; height: 240px; margin-bottom: 2rem; }
+    #status { color: #666; font-size: 0.9rem; }
+    #status.error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Sensor dashboard</h1>
+  <p id="status">Loading…</p>
+
+  <div class="cards">
+    <div class="card"><div class="label">Temperature</div><div class="value" id="now-temperature">–</div></div>
+    <div class="card"><div class="label">Humidity</div>   <div class="value" id="now-humidity">–</div></div>
+    <div class="card"><div class="label">Pressure</div>   <div class="value" id="now-pressure">–</div></div>
+  </div>
+
+  <div class="chart-box"><canvas id="chart-temperature"></canvas></div>
+  <div class="chart-box"><canvas id="chart-humidity"></canvas></div>
+  <div class="chart-box"><canvas id="chart-pressure"></canvas></div>
+
+  <script>
+    // ---------------------------------------------------------------
+    // Everything below runs in the BROWSER, not on the server.
+    // It asks api.php for data, then draws it.
+    // ---------------------------------------------------------------
+
+    const API_URL = 'api.php?limit=500';   // how many readings to fetch
+    const REFRESH_SECONDS = 60;            // how often to fetch new data
+
+    // One entry per chart: which field to plot, its label, units and colour
+    const SERIES = [
+      { field: 'temperature', label: 'Temperature', unit: '°C',  colour: '#d9534f' },
+      { field: 'humidity',    label: 'Humidity',    unit: '%RH', colour: '#0275d8' },
+      { field: 'pressure',    label: 'Pressure',    unit: 'hPa', colour: '#5cb85c' },
+    ];
+
+    const charts = {};
+
+    // Create an empty line chart for each series
+    for (const s of SERIES) {
+      charts[s.field] = new Chart(document.getElementById('chart-' + s.field), {
+        type: 'line',
+        data: { labels: [], datasets: [{
+          label: s.label + ' (' + s.unit + ')',
+          data: [],
+          borderColor: s.colour,
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.2,
+        }]},
+        options: {
+          maintainAspectRatio: false,
+          animation: false,
+          scales: { x: { ticks: { maxTicksLimit: 8 } } },
+        },
+      });
+    }
+
+    // The server stores UTC. new Date() converts it to the viewer's local time.
+    function localTime(isoUtc) {
+      return new Date(isoUtc).toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function update() {
+      const status = document.getElementById('status');
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const json = await response.json();
+        const readings = json.readings;
+
+        if (readings.length === 0) {
+          status.textContent = 'No readings yet. Send some with curl or the Pi script.';
+          return;
+        }
+
+        const labels = readings.map(r => localTime(r.recorded_at));
+        const latest = readings[readings.length - 1];
+
+        for (const s of SERIES) {
+          charts[s.field].data.labels = labels;
+          charts[s.field].data.datasets[0].data = readings.map(r => r[s.field]);
+          charts[s.field].update();
+          document.getElementById('now-' + s.field).textContent = latest[s.field].toFixed(1) + ' ' + s.unit;
+        }
+
+        status.className = '';
+        status.textContent = readings.length + ' readings. Latest: ' + localTime(latest.recorded_at)
+                           + '. Refreshes every ' + REFRESH_SECONDS + ' s.';
+      } catch (err) {
+        status.className = 'error';
+        status.textContent = 'Could not load data: ' + err.message;
+      }
+    }
+
+    update();
+    setInterval(update, REFRESH_SECONDS * 1000);
+  </script>
+</body>
+</html>

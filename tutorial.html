@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web App Introduction</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #161d26;
+    --panel-2: #1c2530;
+    --border: #2a3644;
+    --text: #d6deeb;
+    --muted: #8b98a8;
+    --accent: #4fd1c5;
+    --accent-2: #63b3ed;
+    --warn: #f6ad55;
+    --danger: #fc8181;
+    --ok: #68d391;
+    --code-bg: #0b1016;
+    --mono: ui-monospace, "JetBrains Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 52rem; margin: 0 auto; padding: 2rem 1rem 5rem; }
+  h1 { font-size: 2rem; margin: 0 0 0.25rem; }
+  h2 {
+    margin: 3.5rem 0 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    font-size: 1.45rem; display: flex; align-items: center; gap: 0.75rem;
+  }
+  h2 .num {
+    flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    display: inline-grid; place-items: center;
+    background: var(--accent); color: var(--bg); font-family: var(--mono); font-size: 1.05rem;
+  }
+  h3 { margin: 2rem 0 0.5rem; font-size: 1.1rem; color: var(--accent-2); }
+  .subtitle { color: var(--muted); margin: 0 0 2rem; }
+  a { color: var(--accent-2); }
+  code { font-family: var(--mono); font-size: 0.9em; background: var(--panel-2); padding: 0.1em 0.35em; border-radius: 4px; }
+  kbd {
+    font-family: var(--mono); font-size: 0.85em; padding: 0.1em 0.4em;
+    border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel);
+  }
+  ol, ul { padding-left: 1.4rem; }
+  li { margin: 0.35rem 0; }
+
+  .codeblock { position: relative; margin: 0.75rem 0 1.25rem; }
+  .codeblock .label {
+    font-family: var(--mono); font-size: 0.75rem; color: var(--muted);
+    background: var(--panel-2); border: 1px solid var(--border); border-bottom: none;
+    border-radius: 6px 6px 0 0; padding: 0.25rem 0.75rem; display: inline-block;
+  }
+  pre {
+    margin: 0; background: var(--code-bg); border: 1px solid var(--border); border-radius: 0 6px 6px 6px;
+    padding: 1rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.88rem; line-height: 1.55;
+  }
+  .codeblock:not(:has(.label)) pre { border-radius: 6px; }
+  .copy {
+    position: absolute; top: 0.45rem; right: 0.45rem;
+    font: 0.75rem var(--mono); color: var(--muted); background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0.2rem 0.55rem; cursor: pointer;
+  }
+  .codeblock:has(.label) .copy { top: 1.95rem; }
+  .copy:hover { color: var(--text); border-color: var(--accent); }
+
+  .box { border-left: 4px solid var(--accent-2); background: var(--panel); padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1.25rem 0; }
+  .box > :first-child { margin-top: 0; } .box > :last-child { margin-bottom: 0; }
+  .box strong.tag { display: block; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.2rem; }
+  .box.note  { border-color: var(--accent-2); } .box.note  .tag { color: var(--accent-2); }
+  .box.warn  { border-color: var(--warn); }     .box.warn  .tag { color: var(--warn); }
+  .box.sec   { border-color: var(--danger); }   .box.sec   .tag { color: var(--danger); }
+  .box.check { border-color: var(--ok); }       .box.check .tag { color: var(--ok); }
+  .box.think { border-color: #b794f4; }         .box.think .tag { color: #b794f4; }
+
+  .setup {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem 1.25rem; margin: 1.5rem 0;
+  }
+  .setup label { font-weight: 600; margin-right: 0.5rem; }
+  .setup input {
+    width: 4.5rem; font: 1rem var(--mono); padding: 0.3rem 0.5rem; border-radius: 4px;
+    background: var(--code-bg); color: var(--text); border: 1px solid var(--border);
+  }
+  .setup p { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.92rem; }
+
+  .contents { margin-top: 1.5rem; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; }
+  .contents ol { margin: 0.25rem 0; }
+
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.93rem; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+  th { background: var(--panel-2); }
+  td code { white-space: nowrap; }
+
+  .diagram {
+    font-family: var(--mono); font-size: 0.85rem; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1rem; overflow-x: auto; white-space: pre; line-height: 1.4; color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Web App Introduction</h1>
+<p class="subtitle">IoT and Edge Computing · from "Hello world" to live sensor charts on your own website</p>
+
+<div class="setup">
+  <label for="pinum">Your website number:</label>
+  <input id="pinum" type="number" min="1" max="99" placeholder="N">
+  <p>Type the number from your credentials slip (for example <code>3</code> for pi3.mechatron.co.uk).
+     Every <code>piN</code> on this page changes to your own address, so you can copy commands without editing them.</p>
+</div>
+
+<p>By the end of this session you will have built every layer of a small web-connected IoT system yourself:</p>
+
+<div class="diagram">  Raspberry Pi                         Web server (your subdomain)
+ ┌─────────────────┐   HTTP POST JSON   ┌──────────────┐     SQL     ┌──────────┐
+ │ BME280 → Python │ ─────────────────► │   api.php    │ ──────────► │  MySQL   │
+ └─────────────────┘                    │   (PHP)      │ ◄────────── │ readings │
+                                        └──────────────┘             └──────────┘
+ ┌─────────────────┐   HTTP GET JSON           ▲
+ │ Browser:        │ ──────────────────────────┘
+ │ chart.html (JS) │
+ └─────────────────┘</div>
+
+<div class="contents">
+  <strong>Steps</strong>
+  <ol start="0">
+    <li>Get the files and FileZilla</li>
+    <li>Hello world: a plain HTML page</li>
+    <li>Hello from PHP: code that runs on the server</li>
+    <li>Connect PHP to your database</li>
+    <li>The SQL playground: create your table</li>
+    <li>An API: write and read data with curl</li>
+    <li>JavaScript charts</li>
+    <li>Python on the Pi: send real BME280 readings</li>
+    <li>Tidy up, troubleshooting, and questions for your proposal</li>
+  </ol>
+</div>
+
+<div class="box note">
+  <strong class="tag">You will need</strong>
+  <p>Your Pi with the BME280 connected, and your <strong>credentials slip</strong>. The slip has your website address,
+  FTP login, database details and API key. Keep it to yourself.</p>
+</div>
+
+<div class="box note">
+  <strong class="tag">Pasting into the terminal</strong>
+  <p>Use the <em>copy</em> button on each code block, then paste into the terminal with
+  <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> (plain <kbd>Ctrl</kbd>+<kbd>V</kbd> doesn't work in the terminal).</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">0</span> Get the files and FileZilla</h2>
+
+<p>If you are reading this on your Pi, you have probably already cloned the repository. If not, open a terminal and run:</p>
+
+<div class="codeblock"><pre>cd ~
+git clone https://github.com/Harper-EF12/iot-web-intro.git
+cd iot-web-intro
+ls</pre></div>
+
+<p>You should see:</p>
+<ul>
+  <li><code>server/</code>: the files that will go onto your website</li>
+  <li><code>pi/</code>: the Python script that stays on the Pi</li>
+  <li><code>tutorial.html</code>: this page</li>
+</ul>
+
+<p>Then install FileZilla, the program you'll use to copy files to your website:</p>
+<div class="codeblock"><pre>sudo apt update
+sudo apt install -y filezilla</pre></div>
+
+<h3>Set up FileZilla once</h3>
+<ol>
+  <li>Open FileZilla from the menu (<em>Internet → FileZilla</em>), or type <code>filezilla &amp;</code> in the terminal.</li>
+  <li>Go to <em>File → Site Manager → New site</em> and name it <code>piN</code>.</li>
+  <li>Fill in the <em>General</em> tab:
+    <ul>
+      <li><strong>Protocol:</strong> FTP</li>
+      <li><strong>Host:</strong> the FTP host from your slip. <strong>Port:</strong> <code>21</code></li>
+      <li><strong>Encryption:</strong> <em>Only use plain FTP (insecure)</em></li>
+      <li><strong>Logon Type:</strong> Normal. <strong>User</strong> and <strong>Password:</strong> from your slip</li>
+    </ul>
+  </li>
+  <li>Click <em>Connect</em>. If FileZilla warns about an <em>insecure FTP connection</em>, click OK. That warning is accurate, and we'll come back to why in Step 8.</li>
+</ol>
+
+<p>FileZilla has two sides:</p>
+<ul>
+  <li><strong>Left (Local site):</strong> your Pi. Navigate to <code>/home/your-username/iot-web-intro/server</code>.</li>
+  <li><strong>Right (Remote site):</strong> your website's folder on the server. It may be empty, or contain a placeholder page from the hosting company.</li>
+</ul>
+
+<div class="box warn">
+  <strong class="tag">Only upload the files each step names</strong>
+  <p>Upload files one at a time, from inside the <code>server</code> folder. Never drag the whole <code>iot-web-intro</code>
+  folder across. It contains a hidden <code>.git</code> folder and your Pi's config, and anything you put on the server can be downloaded by anyone.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">1</span> Hello world: a plain HTML page</h2>
+
+<p>Open <code>index.html</code> in nano and put your name where it says <code>YOUR NAME HERE</code>:</p>
+<div class="codeblock"><pre>cd ~/iot-web-intro/server
+nano index.html</pre></div>
+<p>Save with <kbd>Ctrl</kbd>+<kbd>O</kbd>, <kbd>Enter</kbd>, then exit with <kbd>Ctrl</kbd>+<kbd>X</kbd>.</p>
+
+<p>In FileZilla, right-click <code>index.html</code> on the left and choose <em>Upload</em>, or drag it to the right-hand side.</p>
+
+<p>Now open your browser at <a href="http://piN.mechatron.co.uk/" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/</a>.</p>
+
+<div class="box check">
+  <strong class="tag">Check</strong>
+  <p>You see "Hello world!" with your name. That proves four things work: your FTP login, your folder, your subdomain,
+  and DNS (the system that turns <code>piN.mechatron.co.uk</code> into the server's IP address).</p>
+</div>
+
+<p>Right-click the page and choose <em>View page source</em>. What you see is exactly the file you uploaded.
+The server sent it unchanged. Now edit it again, upload it again, and refresh. FileZilla will ask what to do about
+the existing file: choose <strong>Overwrite</strong>, and tick <em>Always use this action</em> so it stops asking.</p>
+
+<div class="box note">
+  <strong class="tag">Not changing?</strong>
+  <p>Browsers keep copies of pages. Force a fresh copy with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">2</span> Hello from PHP: code that runs on the server</h2>
+
+<p>Upload <code>hello.php</code>, then visit <a href="http://piN.mechatron.co.uk/hello.php" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/hello.php</a>.</p>
+
+<p>The page shows the server's time, the PHP version, and the public IP address your request came from.
+Refresh it, and the time changes, because the server builds the page fresh for every request.</p>
+
+<p>Now compare two things:</p>
+<ol>
+  <li>The file on your Pi: <code>nano hello.php</code>. It is full of PHP code.</li>
+  <li><em>View page source</em> in the browser. There is no PHP at all, only the HTML that the code produced.</li>
+</ol>
+
+<div class="box think">
+  <strong class="tag">This is the key idea</strong>
+  <p><strong>Back end</strong> code (PHP) runs on the server and can do things the browser can't: talk to a database,
+  keep passwords secret, decide who is allowed to do what. <strong>Front end</strong> code (HTML, CSS, JavaScript) is sent
+  to the browser and runs there, where anyone can read it. Never put a secret in front-end code.</p>
+</div>
+
+<div class="box think">
+  <strong class="tag">Try this</strong>
+  <p>Compare <em>Your public IP address</em> on the page with your Pi's own address (run <code>hostname -I</code> in the terminal).
+  Why are they different? (Search for "NAT" if you're not sure.)</p>
+</div>
+
+<div class="box note">
+  <strong class="tag">Why not call it index.php?</strong>
+  <p>When you visit just <code>piN.mechatron.co.uk/</code>, the server looks for <code>index.html</code> before
+  <code>index.php</code>. If both exist you'd keep seeing the HTML one and think PHP was broken.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">3</span> Connect PHP to your database</h2>
+
+<p>PHP needs your database login. Real passwords never go in the shared files, so make your own copy of the template and fill it in:</p>
+<div class="codeblock"><pre>cd ~/iot-web-intro/server
+cp config.example.php config.php
+nano config.php</pre></div>
+
+<p>Replace each placeholder with the value from your slip. Keep the quote marks:</p>
+<div class="codeblock"><div class="label">config.php</div><pre>define('DB_HOST', 'your-database-host.example.net');  // host name only, no :3306 on the end
+define('DB_NAME', 'your_database_name');
+define('DB_USER', 'your_database_user');
+define('DB_PASS', 'your_database_password');
+
+define('API_KEY', 'your-api-key');</pre></div>
+
+<div class="box warn">
+  <strong class="tag">Two common mistakes</strong>
+  <ul>
+    <li>The database host is <strong>not</strong> <code>localhost</code>. The database runs on a different machine from the website. Use exactly what's on your slip.</li>
+    <li>Don't add <code>:3306</code> to the host. The port is set separately in <code>db.php</code>.</li>
+  </ul>
+</div>
+
+<p>Upload three files: <code>config.php</code>, <code>db.php</code> and <code>db_test.php</code>. Then visit
+<a href="http://piN.mechatron.co.uk/db_test.php" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/db_test.php</a>.</p>
+
+<div class="box check">
+  <strong class="tag">Check</strong>
+  <p>You see <em>Connected to database …</em> in green, with the database's clock and <em>tables: (none yet)</em>.
+  If you see a red error instead, read it carefully, fix <code>config.php</code>, upload it again and refresh.
+  The table in Step 8 explains the usual errors.</p>
+</div>
+
+<p>What each file does:</p>
+<ul>
+  <li><code>config.php</code> holds your settings and nothing else. It's the only file you edit.</li>
+  <li><code>db.php</code> opens the connection. Every other PHP file uses it, so the connection code is written once.</li>
+  <li><code>db_test.php</code> is a quick health check.</li>
+</ul>
+
+<div class="box note">
+  <strong class="tag">Is config.php safe on the server?</strong>
+  <p>Try visiting <code>piN.mechatron.co.uk/config.php</code>. You get a blank page. The server <em>runs</em> PHP files
+  rather than sending them, and this one runs but prints nothing. That only holds while PHP is working correctly,
+  though. Think about that for your security analysis.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">4</span> The SQL playground: create your table</h2>
+
+<p><code>sql.php</code> runs whatever single SQL statement is written at the top of the file, and shows you the result.
+To try a statement, you <strong>edit the <code>$sql</code> line, save, upload, and refresh</strong>.
+Upload <code>sql.php</code> now and visit
+<a href="http://piN.mechatron.co.uk/sql.php" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/sql.php</a>.
+It starts with <code>SHOW TABLES</code>, which returns 0 rows because the database is empty.</p>
+
+<h3>4a. Create the table</h3>
+<p>Open the file:</p>
+<div class="codeblock"><pre>nano sql.php</pre></div>
+<p>Find the line <code>$sql = "SHOW TABLES";</code>. Put the cursor on it, press <kbd>Ctrl</kbd>+<kbd>K</kbd> to cut the whole line,
+then paste this in its place:</p>
+<div class="codeblock"><div class="label">sql.php: replaces the $sql line</div><pre>$sql = "CREATE TABLE readings (
+    id          INT UNSIGNED  NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    recorded_at DATETIME      NOT NULL,
+    temperature DECIMAL(5,2)  NOT NULL,
+    humidity    DECIMAL(5,2)  NOT NULL,
+    pressure    DECIMAL(6,2)  NOT NULL,
+    INDEX idx_recorded_at (recorded_at)
+)";</pre></div>
+<p>Save, upload <code>sql.php</code> (Overwrite), refresh. You should see <em>Done. 0 row(s) affected</em>.
+Creating a table changes no rows, so 0 is correct.</p>
+
+<p>What each column is for:</p>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Why</th></tr>
+  <tr><td><code>id</code></td><td><code>INT UNSIGNED AUTO_INCREMENT PRIMARY KEY</code></td>
+      <td>A unique number for every row. The database picks it, counting up from 1.</td></tr>
+  <tr><td><code>recorded_at</code></td><td><code>DATETIME</code></td>
+      <td>When the reading arrived, always stored in <strong>UTC</strong>. The browser converts it to local time for display, so the clocks going back in October can't cause duplicate or missing hours.</td></tr>
+  <tr><td><code>temperature</code></td><td><code>DECIMAL(5,2)</code></td>
+      <td>Up to 5 digits, 2 after the point: −999.99 to 999.99 °C. Exact decimals, unlike <code>FLOAT</code>.</td></tr>
+  <tr><td><code>humidity</code></td><td><code>DECIMAL(5,2)</code></td><td>0.00 to 100.00 %RH.</td></tr>
+  <tr><td><code>pressure</code></td><td><code>DECIMAL(6,2)</code></td><td>Needs one more digit: about 1013.25 hPa.</td></tr>
+  <tr><td colspan="3"><code>INDEX idx_recorded_at</code> works like a book's index. It lets the database find "the latest 500 readings" quickly, even when the table holds millions of rows.</td></tr>
+</table>
+
+<h3>4b. Explore</h3>
+<p>Try each of these in turn. Replace only the text <em>inside</em> the quotes on the <code>$sql</code> line:</p>
+
+<div class="codeblock"><div class="label">see the table's design</div><pre>$sql = "DESCRIBE readings";</pre></div>
+
+<div class="codeblock"><div class="label">add a test row by hand</div><pre>$sql = "INSERT INTO readings (recorded_at, temperature, humidity, pressure)
+        VALUES (UTC_TIMESTAMP(), 21.5, 55.0, 1013.25)";</pre></div>
+
+<div class="codeblock"><div class="label">see what's in the table</div><pre>$sql = "SELECT * FROM readings ORDER BY recorded_at DESC LIMIT 20";</pre></div>
+
+<p>Upload and refresh the INSERT twice, then run the SELECT. You have two rows, each with its own <code>id</code>.
+Refreshing ran the INSERT again. Remember that.</p>
+
+<div class="codeblock"><div class="label">remove a test row (use an id you can see)</div><pre>$sql = "DELETE FROM readings WHERE id = 1";</pre></div>
+
+<div class="box sec">
+  <strong class="tag">Security</strong>
+  <p>Anyone who visits <code>sql.php</code> runs whatever statement is in it at that moment. If you leave a
+  <code>DELETE</code> in there, any visitor deletes data. That's why the SQL lives in the file, and why this
+  script must <strong>never</strong> be changed to take SQL from the address bar or a form. That would let a stranger
+  type any SQL they liked: a much more extreme version of <em>SQL injection</em>.
+  When you're finished with it, always set it back to a <code>SELECT</code>, or delete it from the server.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">5</span> An API: write and read data with curl</h2>
+
+<p>Your Pi shouldn't be editing <code>sql.php</code>. It needs a fixed, safe way to send readings: an <strong>API</strong>
+(Application Programming Interface). <code>api.php</code> does two jobs, chosen by the HTTP <em>method</em>:</p>
+
+<table>
+  <tr><th>Request</th><th>Does</th><th>Needs the API key?</th></tr>
+  <tr><td><code>GET api.php</code></td><td>Returns the latest readings as JSON</td><td>No</td></tr>
+  <tr><td><code>POST api.php</code></td><td>Adds one reading, sent as JSON</td><td>Yes, in an <code>X-API-Key</code> header</td></tr>
+</table>
+
+<p>Upload <code>api.php</code>, then open
+<a href="http://piN.mechatron.co.uk/api.php" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/api.php</a>
+in the browser. That's a GET request, and you'll see your rows as <strong>JSON</strong>, a text format for structured data
+that almost every language can read.</p>
+
+<h3>5a. Read with curl</h3>
+<p><code>curl</code> makes HTTP requests from the terminal, which is exactly what your Python script will do later.
+<code>-i</code> shows the response headers, including the status code:</p>
+<div class="codeblock"><pre>curl -i "http://piN.mechatron.co.uk/api.php?limit=5"</pre></div>
+<p>The first line should be <code>HTTP/1.1 200 OK</code>. To make the JSON easier to read:</p>
+<div class="codeblock"><pre>curl -s "http://piN.mechatron.co.uk/api.php?limit=5" | python3 -m json.tool</pre></div>
+
+<h3>5b. Write with curl</h3>
+<p>Replace <code>YOUR_API_KEY</code> with the key from your slip:</p>
+<div class="codeblock"><pre>curl -i -X POST "http://piN.mechatron.co.uk/api.php" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"temperature": 21.7, "humidity": 48.0, "pressure": 1009.5}'</pre></div>
+
+<div class="box check">
+  <strong class="tag">Check</strong>
+  <p>You get <code>HTTP/1.1 201 Created</code> and <code>{"status":"stored","id":…}</code>. Run the GET again, or the SELECT
+  in <code>sql.php</code>, and your new row is there. Notice you didn't send a time: the server added it.</p>
+</div>
+
+<h3>5c. Break it on purpose</h3>
+<p>A server must never trust what it's sent. Send each of these and read the status code and message:</p>
+
+<table>
+  <tr><th>Try</th><th>Change to the command above</th><th>Expect</th></tr>
+  <tr><td>Wrong key</td><td><code>X-API-Key: wrong</code></td><td><code>401</code> Unauthorized</td></tr>
+  <tr><td>Missing field</td><td>delete <code>"pressure": 1009.5</code> (and the comma before it)</td><td><code>400</code> Missing field: pressure</td></tr>
+  <tr><td>Impossible value</td><td><code>"temperature": 500</code></td><td><code>400</code> out of range</td></tr>
+  <tr><td>Wrong type</td><td><code>"temperature": "hot"</code></td><td><code>400</code> must be a number</td></tr>
+  <tr><td>Not JSON</td><td><code>-d 'hello'</code></td><td><code>400</code> must be a JSON object</td></tr>
+  <tr><td>Wrong method</td><td><code>-X DELETE</code></td><td><code>405</code> Method not allowed</td></tr>
+</table>
+
+<p>Open <code>api.php</code> in nano and find where each of these is checked. Note in particular:</p>
+<ul>
+  <li><code>prepare()</code> and <code>execute()</code>: a <em>prepared statement</em> sends the SQL and the data separately,
+  so a value can never be run as SQL. This is the standard defence against SQL injection.</li>
+  <li><code>hash_equals()</code> compares the key in a way that doesn't leak how many characters were right.</li>
+  <li>When the database fails, the API replies <code>500 Database error</code> and nothing more, so an attacker learns nothing useful.</li>
+</ul>
+
+<div class="box note">
+  <strong class="tag">Put in a few more readings</strong>
+  <p>Run the POST four or five more times with different numbers. You'll want something to chart in the next step.</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">6</span> JavaScript charts</h2>
+
+<p>Upload <code>chart.html</code> and open
+<a href="http://piN.mechatron.co.uk/chart.html" target="_blank" rel="noopener" class="sub-href">http://piN.mechatron.co.uk/chart.html</a>.</p>
+
+<p>You should see the latest values and a chart for each measurement. This page is plain HTML, so the server sends it unchanged.
+The work happens <strong>in your browser</strong>:</p>
+<ol>
+  <li>The browser downloads the Chart.js library from a public CDN (a content delivery network). Nothing was installed on the server.</li>
+  <li>JavaScript calls <code>fetch('api.php?limit=500')</code>: the same GET you did with curl.</li>
+  <li>It converts each UTC time to <em>your</em> local time with <code>new Date()</code>.</li>
+  <li>It draws the charts, and repeats every 60 seconds.</li>
+</ol>
+
+<p>Open <code>chart.html</code> in nano and read the <code>&lt;script&gt;</code> section. Things to try:</p>
+<ul>
+  <li>Change <code>REFRESH_SECONDS</code> to <code>10</code>, upload, then POST a reading with curl and watch it appear.</li>
+  <li>Change a colour in <code>SERIES</code>.</li>
+  <li>Press <kbd>F12</kbd> in the browser, open the <em>Network</em> tab and watch the requests to <code>api.php</code>.
+  You're seeing <strong>polling</strong>: the browser repeatedly asking for new data.</li>
+</ul>
+
+<!-- ================================================================== -->
+<h2><span class="num">7</span> Python on the Pi: send real BME280 readings</h2>
+
+<p>Now replace curl with a script that reads the sensor and POSTs a reading every minute.</p>
+
+<h3>7a. Check the sensor</h3>
+<div class="codeblock"><pre>i2cdetect -y 1</pre></div>
+<p>You should see <code>77</code> (or <code>76</code>) in the grid. If the grid is empty, check the cable, and check that I2C is
+enabled in <em>Preferences → Control Centre → Interfaces</em>.</p>
+
+<h3>7b. Make a virtual environment and install the libraries</h3>
+<p>A <strong>virtual environment</strong> (venv) keeps this project's Python libraries separate from the system's.</p>
+<div class="codeblock"><pre>cd ~/iot-web-intro/pi
+python3 -m venv --system-site-packages .venv
+source .venv/bin/activate
+pip install -r requirements.txt</pre></div>
+<p>Your prompt now starts with <code>(.venv)</code>. Whenever you open a new terminal to run the script,
+<code>cd</code> to this folder and run <code>source .venv/bin/activate</code> again first.</p>
+
+<h3>7c. The Pi's own config file</h3>
+<p>The Python script reads its settings from <code>config.py</code>, alongside it in the same folder. The pattern is the same as the server: copy the template, then fill it in.</p>
+<div class="codeblock"><pre>cp config.example.py config.py
+nano config.py</pre></div>
+<div class="codeblock"><div class="label">config.py</div><pre>SERVER_URL = "http://piN.mechatron.co.uk"
+API_KEY = "your-api-key"
+INTERVAL = 60
+I2C_ADDRESS = 0x77</pre></div>
+<ul>
+  <li><code>SERVER_URL</code>: your address, with no slash on the end.</li>
+  <li><code>API_KEY</code>: <strong>the same key</strong> as in the server's <code>config.php</code>.</li>
+  <li><code>I2C_ADDRESS</code>: <code>0x77</code> or <code>0x76</code>, whichever <code>i2cdetect</code> showed.</li>
+</ul>
+
+<h3>7d. Run it</h3>
+<div class="codeblock"><pre>python upload_bme280.py</pre></div>
+
+<div class="box check">
+  <strong class="tag">Check</strong>
+  <p>Every minute a line appears ending <code>-&gt; 201 {"status":"stored",…}</code>, and <code>chart.html</code> grows.
+  Breathe on the sensor and watch the humidity jump. Stop the script with <kbd>Ctrl</kbd>+<kbd>C</kbd>.</p>
+</div>
+
+<p>Read <code>upload_bme280.py</code>. It's short, and does three things in a loop: read, send, wait. Note two details:</p>
+<ul>
+  <li><code>timeout=10</code> and the <code>except requests.RequestException</code> mean a dropped network connection
+  prints an error and carries on, instead of crashing the script. But that reading is <em>lost</em>.</li>
+  <li>It sets its own <code>User-Agent</code>. This hosting silently ignores requests that identify themselves as Python's
+  <code>requests</code> library. That was a real problem, found while building this tutorial.</li>
+</ul>
+
+<div class="box think">
+  <strong class="tag">Try this</strong>
+  <p>Unplug the network (or turn off Wi-Fi) for two minutes while the script runs, then reconnect. Look at the
+  output and the chart. What happened, and how could you avoid losing data?</p>
+</div>
+
+<!-- ================================================================== -->
+<h2><span class="num">8</span> Tidy up, troubleshooting, and questions for your proposal</h2>
+
+<h3>Before you leave</h3>
+<ul>
+  <li>Set <code>sql.php</code> back to a harmless <code>SELECT</code>, or delete it from the server
+  (right-click → <em>Delete</em> in FileZilla's right-hand pane).</li>
+  <li>Delete <code>db_test.php</code> from the server too. It tells visitors your database name and version.</li>
+  <li>Keep your copy of the repository. You'll build your own project on top of it.</li>
+</ul>
+
+<h3>Troubleshooting</h3>
+<table>
+  <tr><th>Symptom</th><th>Likely cause</th></tr>
+  <tr><td>FileZilla: <em>530 Login incorrect</em></td><td>FTP user or password typed wrongly. They're case-sensitive.</td></tr>
+  <tr><td>FileZilla can't connect at all</td><td>Encryption isn't set to <em>Only use plain FTP</em>, or the host is wrong.</td></tr>
+  <tr><td>Browser: 404 Not Found</td><td>File not uploaded, uploaded into a subfolder, or the name differs (case matters).</td></tr>
+  <tr><td>Your change doesn't appear</td><td>Saved in nano but not uploaded, or the browser cached it: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>.</td></tr>
+  <tr><td><em>config.php not found</em></td><td>You haven't uploaded <code>config.php</code>. Remember it's a different file from <code>config.example.php</code>.</td></tr>
+  <tr><td><em>Access denied for user</em></td><td>Database user or password wrong in <code>config.php</code>.</td></tr>
+  <tr><td><em>getaddrinfo failed</em> or <em>Connection refused</em></td><td><code>DB_HOST</code> is wrong: <code>localhost</code>, a typo, or <code>:3306</code> on the end.</td></tr>
+  <tr><td><em>Table … readings doesn't exist</em></td><td>Step 4a not done yet.</td></tr>
+  <tr><td><em>syntax error</em> on the sql.php page</td><td>A missing <code>"</code> or <code>;</code> on the <code>$sql</code> line, or a <code>"</code> inside your SQL. Use <code>'single quotes'</code> for text inside SQL.</td></tr>
+  <tr><td>curl or Python: <code>401</code></td><td>The API key doesn't match the one in the server's <code>config.php</code>.</td></tr>
+  <tr><td>curl or Python: <code>400</code></td><td>Read the message. It says exactly which field is wrong.</td></tr>
+  <tr><td>curl or Python: <code>500 Database error</code></td><td>Run <code>db_test.php</code> and <code>DESCRIBE readings</code> in <code>sql.php</code> to find out which.</td></tr>
+  <tr><td>Chart page: <em>Could not load data</em></td><td>Open <code>api.php</code> directly. If that fails, the problem is there, not in the chart.</td></tr>
+  <tr><td>Python: <em>No module named 'board'</em></td><td>The venv isn't active: <code>source .venv/bin/activate</code>.</td></tr>
+  <tr><td>Python: <em>No I2C device at address</em></td><td>Wrong <code>I2C_ADDRESS</code>, loose cable, or I2C not enabled.</td></tr>
+</table>
+
+<h3>Questions for your proposal</h3>
+<p>Use what you've just built to start answering the reading-week questions:</p>
+
+<div class="box sec">
+  <strong class="tag">Security: what is exposed?</strong>
+  <ul>
+    <li>FTP and HTTP both travel as plain text. Your FTP password and your API key cross the network readable by anyone in between. What would HTTPS change? What wouldn't it change?</li>
+    <li><code>GET api.php</code> needs no key. Anyone who guesses the address can read your data. Does that matter for <em>your</em> project? Does any of the data relate to people (GDPR)?</li>
+    <li>If someone learned your API key, what could they do? How would you notice?</li>
+    <li>Why couldn't <code>chart.html</code> simply include the API key and POST data itself?</li>
+  </ul>
+</div>
+
+<div class="box think">
+  <strong class="tag">Design</strong>
+  <ul>
+    <li>At one reading a minute, how many rows is that per day? Per year? What happens to the chart if it fetches all of them?</li>
+    <li>The server sets the timestamp. When would you want the Pi to set it instead? (Hint: the network test in Step 7.)</li>
+    <li>The browser <em>polls</em> for new data every 60 s. What are the alternatives (WebSockets, MQTT), and what would they cost you on this hosting?</li>
+    <li>Your project will measure different things. What would your own <code>CREATE TABLE</code> look like, and what ranges would your API accept?</li>
+  </ul>
+</div>
+
+</main>
+
+<script>
+  // ------------------------------------------------------------
+  // 1. Replace "piN" with the student's number everywhere it appears
+  // ------------------------------------------------------------
+  const subTargets = [];
+  document.querySelectorAll('pre, code, .sub-href').forEach(el => {
+    if (el.closest('.setup')) return;               // leave the instructions box alone
+    if (el.textContent.includes('piN')) {
+      subTargets.push({ el, text: el.textContent, href: el.getAttribute('href') });
+    }
+  });
+
+  function applyNumber(n) {
+    const name = n ? 'pi' + n : 'piN';
+    for (const t of subTargets) {
+      t.el.textContent = t.text.replaceAll('piN', name);
+      if (t.href) t.el.setAttribute('href', t.href.replaceAll('piN', name));
+    }
+  }
+
+  const input = document.getElementById('pinum');
+  let saved = '';
+  try { saved = localStorage.getItem('iot-web-intro-pinum') || ''; } catch (e) {}
+  if (saved) { input.value = saved; applyNumber(saved); }
+
+  input.addEventListener('input', () => {
+    const n = input.value.replace(/[^0-9]/g, '');
+    applyNumber(n);
+    try { localStorage.setItem('iot-web-intro-pinum', n); } catch (e) {}
+  });
+
+  // ------------------------------------------------------------
+  // 2. Copy buttons on every code block
+  // ------------------------------------------------------------
+  document.querySelectorAll('pre').forEach(pre => {
+    if (pre.classList.contains('diagram')) return;
+    let wrap = pre.parentElement;
+    if (!wrap.classList.contains('codeblock')) {
+      wrap = document.createElement('div');
+      wrap.className = 'codeblock';
+      pre.replaceWith(wrap);
+      wrap.appendChild(pre);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'copy';
+    btn.textContent = 'copy';
+    btn.addEventListener('click', async () => {
+      const text = pre.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); ta.remove();
+      }
+      btn.textContent = 'copied';
+      setTimeout(() => (btn.textContent = 'copy'), 1500);
+    });
+    wrap.appendChild(btn);
+  });
+</script>
+</body>
+</html>
